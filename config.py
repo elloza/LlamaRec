@@ -8,7 +8,7 @@ RAW_DATASET_ROOT_FOLDER = 'data'
 EXPERIMENT_ROOT = 'experiments'
 STATE_DICT_KEY = 'model_state_dict'
 OPTIMIZER_STATE_DICT_KEY = 'optimizer_state_dict'
-PROJECT_NAME = 'llmrec'
+PROJECT_NAME = 'llmrec_original'
 
 
 def set_template(args):
@@ -101,7 +101,7 @@ parser.add_argument('--metric_ks', nargs='+', type=int, default=[1, 5, 10, 20, 5
 parser.add_argument('--rerank_metric_ks', nargs='+', type=int, default=[1, 5, 10])
 parser.add_argument('--best_metric', type=str, default='Recall@10')
 parser.add_argument('--rerank_best_metric', type=str, default='NDCG@10')
-parser.add_argument('--use_wandb', type=bool, default=False)
+parser.add_argument('--use_wandb', type=bool, default=True)
 
 ################
 # Retriever Model

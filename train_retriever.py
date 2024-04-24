@@ -28,21 +28,25 @@ def main(args, export_root=None):
     trainer = LRUTrainer(args, model, train_loader, val_loader, test_loader, export_root, args.use_wandb)
     trainer.train()
     trainer.test()
-
+    
     # the next line generates val / test candidates for reranking
     trainer.generate_candidates(os.path.join(export_root, 'retrieved.pkl'))
+    trainer.logger_service.complete()
 
 
 if __name__ == "__main__":
     args.model_code = 'lru'
     set_template(args)
-    main(args, export_root=None)
+    #main(args, export_root=None)
 
     # # searching best hyperparameters
-    # for decay in [0, 0.01]:
-    #     for dropout in [0, 0.1, 0.2, 0.3, 0.4, 0.5]:
-    #         args.weight_decay = decay
-    #         args.bert_dropout = dropout
-    #         args.bert_attn_dropout = dropout
-    #         export_root = EXPERIMENT_ROOT + '/' + args.model_code + '/' + args.dataset_code + '/' + str(decay) + '_' + str(dropout)
-    #         main(args, export_root=export_root)
+    for decay in [0, 0.01]:
+        for dropout in [0, 0.1, 0.2, 0.3, 0.4, 0.5]:
+            print("------------------------------------")
+            print(f"decay: {decay}, dropout: {dropout}")
+            print("------------------------------------")
+            args.weight_decay = decay
+            args.bert_dropout = dropout
+            args.bert_attn_dropout = dropout
+            export_root = EXPERIMENT_ROOT + '/' + args.model_code + '/' + args.dataset_code + '/' + str(decay) + '_' + str(dropout)
+            main(args, export_root=export_root)

@@ -45,7 +45,7 @@ class BaseTrainer(metaclass=ABCMeta):
         if use_wandb:
             import wandb
             wandb.init(
-                name=self.args.model_code+'_'+self.args.dataset_code,
+                name=self.args.model_code+'_'+self.args.dataset_code+'_'+str(self.args.seed)+'_drop_'+str(self.args.bert_dropout)+'_decay_'+str(self.args.weight_decay),
                 project=PROJECT_NAME,
                 config=args,
             )
@@ -72,7 +72,7 @@ class BaseTrainer(metaclass=ABCMeta):
             if self.exit_training:
                 print('Early stopping triggered. Exit training')
                 break
-        self.logger_service.complete()
+        #self.logger_service.complete()
 
     def train_one_epoch(self, epoch, accum_iter):
         average_meter_set = AverageMeterSet()

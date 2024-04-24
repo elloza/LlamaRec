@@ -11,6 +11,16 @@ We propose a two-stage framework using large language models for ranking-based r
 
 Pytorch, transformers, peft, bitsandbytes etc. For our detailed running environment see requirements.txt.
 
+Create the conda environment
+
+```bash
+conda env create -f environment.yml
+```
+
+Activate the environment
+```bash
+conda activate llamarec
+```
 
 ## How to run LlamaRec
 The command below starts the training of the retriever model LRURec
