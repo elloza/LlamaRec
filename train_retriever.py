@@ -20,12 +20,20 @@ except:
 
 def main(args, export_root=None):
     seed_everything(args.seed)
+
     train_loader, val_loader, test_loader = dataloader_factory(args)
-    model = LRURec(args)
+
     if export_root == None:
         export_root = EXPERIMENT_ROOT + '/' + args.model_code + '/' + args.dataset_code
+
+    if args.model_code == 'lru':
+        model = LRURec(args)
+        trainer = LRUTrainer(args, model, train_loader, val_loader, test_loader, export_root, args.use_wandb)
+
+    elif args.model_code == 'sas':
+        model = SASRec(args)
+        trainer = SASTrainer(args, model, train_loader, val_loader, test_loader, export_root)
     
-    trainer = LRUTrainer(args, model, train_loader, val_loader, test_loader, export_root, args.use_wandb)
     trainer.train()
     trainer.test()
     
@@ -35,11 +43,12 @@ def main(args, export_root=None):
 
 
 if __name__ == "__main__":
-    args.model_code = 'lru'
+    args.model_code = 'sas'
     set_template(args)
-    #main(args, export_root=None)
+    main(args, export_root=None)
 
     # # searching best hyperparameters
+    """
     for decay in [0, 0.01]:
         for dropout in [0, 0.1, 0.2, 0.3, 0.4, 0.5]:
             print("------------------------------------")
@@ -50,3 +59,4 @@ if __name__ == "__main__":
             args.bert_attn_dropout = dropout
             export_root = EXPERIMENT_ROOT + '/' + args.model_code + '/' + args.dataset_code + '/' + str(decay) + '_' + str(dropout)
             main(args, export_root=export_root)
+    """

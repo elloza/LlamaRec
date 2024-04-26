@@ -33,7 +33,6 @@ class LoggerService(object):
         for logger in self.test_loggers:
             logger.log(self.writer, **log_data)
 
-
 class AbstractBaseLogger(metaclass=ABCMeta):
     @abstractmethod
     def log(self, *args, **kwargs):
