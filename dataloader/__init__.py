@@ -1,6 +1,7 @@
 from datasets import dataset_factory
 
 from .lru import *
+from .sas import *
 from .llm import *
 from .utils import *
 
@@ -9,6 +10,8 @@ def dataloader_factory(args):
     dataset = dataset_factory(args)
     if args.model_code == 'lru':
         dataloader = LRUDataloader(args, dataset)
+    elif args.model_code == 'sas':
+        dataloader = SASDataloader(args, dataset)
     elif args.model_code == 'llm':
         dataloader = LLMDataloader(args, dataset)
     

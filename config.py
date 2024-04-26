@@ -34,6 +34,8 @@ def set_template(args):
 
     if torch.cuda.is_available(): args.device = 'cuda'
     else: args.device = 'cpu'
+    args.num_gpu = 1
+
     args.optimizer = 'AdamW'
     args.lr = 0.001
     args.weight_decay = 0.01
@@ -52,6 +54,14 @@ def set_template(args):
     args.bert_num_heads = 2
     args.bert_head_size = None
 
+    #SAS rec
+    args.bert_max_predictions = 20
+    args.train_negative_sampler_code = 'random'
+    args.train_negative_sample_size = 0
+    args.train_negative_sampling_seed = 0
+    args.test_negative_sampler_code = 'random'
+    args.test_negative_sample_size = 100
+    args.test_negative_sampling_seed = 98765
 
 parser = argparse.ArgumentParser()
 
@@ -102,6 +112,8 @@ parser.add_argument('--rerank_metric_ks', nargs='+', type=int, default=[1, 5, 10
 parser.add_argument('--best_metric', type=str, default='Recall@10')
 parser.add_argument('--rerank_best_metric', type=str, default='NDCG@10')
 parser.add_argument('--use_wandb', type=bool, default=True)
+# logger #
+parser.add_argument('--log_period_as_iter', type=int, default=12800)
 
 ################
 # Retriever Model
