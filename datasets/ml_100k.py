@@ -55,26 +55,43 @@ class ML100KDataset(AbstractDataset):
         print()
 
     def preprocess(self):
+        # TODO(DONE): Crea un diccionario que se le pongan los metadatos
         dataset_path = self._get_preprocessed_dataset_path()
-        if dataset_path.is_file():
-            print('Already preprocessed. Skip preprocessing')
-            return
+        # FIXME: We always force to preprocess until new notice
+        #if dataset_path.is_file():
+        #    print('Already preprocessed. Skip preprocessing')
+        #    return
         if not dataset_path.parent.is_dir():
             dataset_path.parent.mkdir(parents=True)
         self.maybe_download_raw_dataset()
         df = self.load_ratings_df()
-        meta_raw = self.load_meta_dict()
+        # To honor legacy code I duplicate enriched_meta_raw with the required cateogires field
+        # But keep as much as possible previous meta_raw architecture
+        meta_raw, enriched_meta_raw = self.load_meta_dict()
         df = df[df['sid'].isin(meta_raw)]  # filter items without meta info
         df = self.filter_triplets(df)
         df, umap, smap = self.densify_index(df)
         train, val, test = self.split_df(df, len(umap))
-        meta = {smap[k]: v for k, v in meta_raw.items() if k in smap}
-        dataset = {'train': train,
-                   'val': val,
-                   'test': test,
-                   'meta': meta,
-                   'umap': umap,
-                   'smap': smap}
+        meta = {
+            smap[k]: v 
+            for k, v in meta_raw.items() 
+            if k in smap
+        }
+        # New field to avoid type change breakdowns 
+        enriched_meta = {
+            smap[k]: v 
+            for k, v in enriched_meta_raw.items() 
+            if k in smap
+        }
+        dataset = {
+            'train': train,
+            'val': val,
+            'test': test,
+            'meta': meta, # {"id": "title + year"}
+            'enriched_meta': enriched_meta,  # {"id": {'title': 'bla bla', 'year': 1900, 'categories': ['c1', 'c2']}}
+            'umap': umap,
+            'smap': smap
+        }
         with dataset_path.open('wb') as f:
             pickle.dump(dataset, f)
 
@@ -90,9 +107,11 @@ class ML100KDataset(AbstractDataset):
         file_path = folder_path.joinpath('movies.csv')
         df = pd.read_csv(file_path, encoding="ISO-8859-1")
         meta_dict = {}
+        enriched_meta_dict = {}
         for row in df.itertuples():
             title = row[2][:-7]  # remove year (optional)
             year = row[2][-7:] # TODO: añadir también las categorías
+            categories = row[3].split("|")
 
             title = re.sub('\(.*?\)', '', title).strip()
             # the rest articles and parentheses are not considered here
@@ -103,4 +122,11 @@ class ML100KDataset(AbstractDataset):
                 title = title_post + ' ' + title_pre
 
             meta_dict[row[1]] = title + year
-        return meta_dict
+
+            enriched_meta_dict[row[1]] = {
+                "title": title,
+                "year": year,
+                "categories": categories
+            }
+            
+        return meta_dict, enriched_meta_dict
