@@ -66,11 +66,11 @@ def seq_to_token_ids(args, seq, candidates, label, text_dict, tokenizer, prompte
     seq_t = ' \n '.join(['(' + str(idx + 1) + ') ' + truncate_title(text_dict[item]) 
                        for idx, item in enumerate(seq)])
     can_t = ' \n '.join(['(' + chr(ord('A') + idx) + ') ' + truncate_title(text_dict[item])
-                       for idx, item in enumerate(candidates)])
-    output = chr(ord('A') + candidates.index(label))  # ranking only
+                       for idx, item in enumerate(candidates)]) # TODO: ordenación random de los candidatos.
+    output = chr(ord('A') + candidates.index(label))  # ranking only 
     
     data_point = {}
-    data_point['system'] = args.llm_system_template if args.llm_system_template is not None else DEFAULT_SYSTEM_PROMPT
+    data_point['system'] = args.llm_system_template if args.llm_system_template is not None else DEFAULT_SYSTEM_PROMPT # TODO: template para 
     data_point['input'] = args.llm_input_template.format(seq_t, can_t)
     data_point['output'] = output
     

@@ -133,12 +133,12 @@ parser.add_argument('--bert_mask_prob', type=float, default=0.25)
 ################
 parser.add_argument('--llm_base_model', type=str, default='meta-llama/Llama-2-7b-hf')
 parser.add_argument('--llm_base_tokenizer', type=str, default='meta-llama/Llama-2-7b-hf')
-parser.add_argument('--llm_max_title_len', type=int, default=32)
-parser.add_argument('--llm_max_text_len', type=int, default=1536)
-parser.add_argument('--llm_max_history', type=int, default=20)
+parser.add_argument('--llm_max_title_len', type=int, default=32) # TODO: Modify to accept categories
+parser.add_argument('--llm_max_text_len', type=int, default=1536)# TODO: Modify to accept categories
+parser.add_argument('--llm_max_history', type=int, default=20) 
 parser.add_argument('--llm_train_on_inputs', type=bool, default=False)
 parser.add_argument('--llm_negative_sample_size', type=int, default=19)  # 19 negative & 1 positive
-parser.add_argument('--llm_system_template', type=str,  # instruction
+parser.add_argument('--llm_system_template', type=str,  # instruction # TODO: 
     default="Given user history in chronological order, recommend an item from the candidate pool with its index letter.")
 parser.add_argument('--llm_input_template', type=str, \
     default='User history: {}; \n Candidate pool: {}')

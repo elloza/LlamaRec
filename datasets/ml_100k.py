@@ -92,7 +92,7 @@ class ML100KDataset(AbstractDataset):
         meta_dict = {}
         for row in df.itertuples():
             title = row[2][:-7]  # remove year (optional)
-            year = row[2][-7:]
+            year = row[2][-7:] # TODO: añadir también las categorías
 
             title = re.sub('\(.*?\)', '', title).strip()
             # the rest articles and parentheses are not considered here
