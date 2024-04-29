@@ -51,26 +51,44 @@ class BeautyDataset(AbstractDataset):
             print()
 
     def preprocess(self):
+        # TODO(DONE): Crea un diccionario que se le pongan los metadatos
+        print("!! This implementation will force the preprocessing !!")
         dataset_path = self._get_preprocessed_dataset_path()
-        if dataset_path.is_file():
-            print('Already preprocessed. Skip preprocessing')
-            return
+        # FIXME: We always force to preprocess until new notice
+        #if dataset_path.is_file():
+        #    print('Already preprocessed. Skip preprocessing')
+        #    return
         if not dataset_path.parent.is_dir():
             dataset_path.parent.mkdir(parents=True)
         self.maybe_download_raw_dataset()
         df = self.load_ratings_df()
-        meta_raw = self.load_meta_dict()
+        # To honor legacy code I duplicate enriched_meta_raw with the required cateogires field
+        # But keep as much as possible previous meta_raw architecture
+        meta_raw, enriched_meta_raw = self.load_meta_dict()
         df = df[df['sid'].isin(meta_raw)]  # filter items without meta info
         df = self.filter_triplets(df)
         df, umap, smap = self.densify_index(df)
         train, val, test = self.split_df(df, len(umap))
-        meta = {smap[k]: v for k, v in meta_raw.items() if k in smap}
-        dataset = {'train': train,
-                   'val': val,
-                   'test': test,
-                   'meta': meta,
-                   'umap': umap,
-                   'smap': smap}
+        meta = {
+            smap[k]: v 
+            for k, v in meta_raw.items() 
+            if k in smap
+        }
+        # New field to avoid type change breakdowns 
+        enriched_meta = {
+            smap[k]: v 
+            for k, v in enriched_meta_raw.items() 
+            if k in smap
+        }
+        dataset = {
+            'train': train,
+            'val': val,
+            'test': test,
+            'meta': meta, # {"id": "title"}
+            'enriched_meta': enriched_meta,  # {"id": {'title': 'bla bla', 'categories': ['c1', 'c2']}}
+            'umap': umap,
+            'smap': smap
+        }
         with dataset_path.open('wb') as f:
             pickle.dump(dataset, f)
 
@@ -86,10 +104,19 @@ class BeautyDataset(AbstractDataset):
         file_path = folder_path.joinpath(self.all_raw_file_names()[1])
 
         meta_dict = {}
+        enriched_meta_dict = {}
         with gzip.open(file_path, 'rb') as f:
             for line in f:
                 item = eval(line)
                 if 'title' in item and len(item['title']) > 0:
                     meta_dict[item['asin'].strip()] = item['title'].strip()
+                    
+                    # New Dictionary with extended information, Categories is an array
+                    # So it can be joined at any moment with required token
+                    # categories = '|'.join(meta_dict['id']['categories'])
+                    enriched_meta_dict[item['asin'].strip()] = {
+                        'title': item['title'].strip(),
+                        'categories': item['categories'][0]
+                    }
         
-        return meta_dict
+        return meta_dict, enriched_meta_dict
