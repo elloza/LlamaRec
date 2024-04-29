@@ -11,8 +11,14 @@ import sys
 
 
 def download(url, savepath):
-    urllib.request.urlretrieve(url, str(savepath))
-    print()
+    try:
+        urllib.request.urlretrieve(url, str(savepath))
+        print()
+    except Exception:
+        import ssl
+        ssl._create_default_https_context = ssl._create_unverified_context
+        urllib.request.urlretrieve(url, str(savepath))
+
 
 
 def unzip(zippath, savepath):
