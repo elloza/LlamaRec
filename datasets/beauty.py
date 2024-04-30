@@ -80,12 +80,22 @@ class BeautyDataset(AbstractDataset):
             for k, v in enriched_meta_raw.items() 
             if k in smap
         }
+
+        # TODO Use same structure, a single string not a dictionary
+        new_dict = {
+            key: f"{value['title']} ({', '.join(value['categories'])})"
+                for key, value in enriched_meta.items()
+            }
+
+        # print max length of the string
+        max_length = max(len(valor) for valor in new_dict.values())
+        print(f"The max length of the title is: {max_length}")
+
         dataset = {
             'train': train,
             'val': val,
             'test': test,
-            'meta': meta, # {"id": "title"}
-            'enriched_meta': enriched_meta,  # {"id": {'title': 'bla bla', 'categories': ['c1', 'c2']}}
+            'meta': new_dict, # Changed for title (categories)
             'umap': umap,
             'smap': smap
         }

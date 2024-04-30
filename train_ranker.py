@@ -45,7 +45,10 @@ def main(args, export_root=None):
         device_map='auto',
         cache_dir=args.llm_cache_dir,
     )
-    model.gradient_checkpointing_enable()
+
+    model.gradient_checkpointing_enable(
+        gradient_checkpointing_kwargs={"use_reentrant": False}
+    )
     model = prepare_model_for_kbit_training(model)
     config = LoraConfig(
         r=args.lora_r,
@@ -66,6 +69,25 @@ def main(args, export_root=None):
 
 
 if __name__ == "__main__":
-    args.model_code = 'llm'
-    set_template(args)
-    main(args, export_root=None)
+
+    # Experiments with different datasets and tags
+    dataset_codes = ['ml-100k','games','beauty']
+    for dataset_code in dataset_codes:
+
+        args.dataset_code = dataset_code
+        args.model_code = 'llm'
+
+        # Retriever
+        args.llm_retrieved_path = EXPERIMENT_ROOT + '/lru/' + args.dataset_code + '/0_0.5'
+
+        set_template(args)
+
+        # Save experiment results
+        export_root = EXPERIMENT_ROOT + '/' + args.llm_base_model.split('/')[-1] + '/' + args.dataset_code + '_tags'
+
+        print(args)
+
+        main(args, export_root=export_root)
+
+        # Limpiar la memoria de la GPU después de cada experimento
+        # torch.cuda.empty_cache()  # Libera la memoria de la GPU

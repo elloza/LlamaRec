@@ -79,12 +79,40 @@ class GamesDataset(AbstractDataset):
             for k, v in enriched_meta_raw.items() 
             if k in smap
         }
+
+        import re
+        def contains_html(text):
+            return bool(re.search(r'<[^>]+>', text))
+
+        def clean_html(diccionario):
+            new_dict = {}
+            for clave, valor in diccionario.items():
+                if isinstance(valor, list):
+                    new_dict[clave] = [item for item in valor if not contains_html(item)]
+                else:
+                    if not contains_html(valor):
+                        new_dict[clave] = valor
+            return new_dict
+
+        # Clean all the entries of enriched_meta
+        for key, value in enriched_meta.items():
+            enriched_meta[key] = clean_html(value)
+
+        # TODO Use same structure, a single string not a dictionary
+        new_dict = {
+            key: f"{value['title']} ({', '.join(value['categories'])})"
+                for key, value in enriched_meta.items()
+            }
+
+        # print max length of the string
+        max_length = max(len(valor) for valor in new_dict.values())
+        print(f"The max length of the title is: {max_length}")
+
         dataset = {
             'train': train,
             'val': val,
             'test': test,
-            'meta': meta,
-            'enriched_meta': enriched_meta,
+            'meta': new_dict, # Changed for title (categories)
             'umap': umap,
             'smap': smap
         }

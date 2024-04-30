@@ -8,7 +8,7 @@ RAW_DATASET_ROOT_FOLDER = 'data'
 EXPERIMENT_ROOT = 'experiments'
 STATE_DICT_KEY = 'model_state_dict'
 OPTIMIZER_STATE_DICT_KEY = 'optimizer_state_dict'
-PROJECT_NAME = 'llmrec_original'
+PROJECT_NAME = 'llmrec_dittet_24_experiments'
 
 
 def set_template(args):
@@ -77,10 +77,10 @@ parser.add_argument('--seed', type=int, default=42)
 ################
 # Dataloader
 ################
-parser.add_argument('--train_batch_size', type=int, default=64)
-parser.add_argument('--val_batch_size', type=int, default=64)
-parser.add_argument('--test_batch_size', type=int, default=64)
-parser.add_argument('--num_workers', type=int, default=8)
+parser.add_argument('--train_batch_size', type=int, default=32)
+parser.add_argument('--val_batch_size', type=int, default=32)
+parser.add_argument('--test_batch_size', type=int, default=32)
+parser.add_argument('--num_workers', type=int, default=4)
 parser.add_argument('--sliding_window_size', type=float, default=1.0)
 parser.add_argument('--negative_sample_size', type=int, default=10)
 
@@ -89,7 +89,7 @@ parser.add_argument('--negative_sample_size', type=int, default=10)
 ################
 # optimization #
 parser.add_argument('--device', type=str, default='cuda', choices=['cpu', 'cuda'])
-parser.add_argument('--num_epochs', type=int, default=500)
+parser.add_argument('--num_epochs', type=int, default=1)
 parser.add_argument('--optimizer', type=str, default='AdamW', choices=['AdamW', 'Adam'])
 parser.add_argument('--weight_decay', type=float, default=None)
 parser.add_argument('--adam_epsilon', type=float, default=1e-9)
@@ -133,7 +133,7 @@ parser.add_argument('--bert_mask_prob', type=float, default=0.25)
 ################
 parser.add_argument('--llm_base_model', type=str, default='meta-llama/Llama-2-7b-hf')
 parser.add_argument('--llm_base_tokenizer', type=str, default='meta-llama/Llama-2-7b-hf')
-parser.add_argument('--llm_max_title_len', type=int, default=32) # TODO: Modify to accept categories
+parser.add_argument('--llm_max_title_len', type=int, default=32)
 parser.add_argument('--llm_max_text_len', type=int, default=1536)# TODO: Modify to accept categories
 parser.add_argument('--llm_max_history', type=int, default=20) 
 parser.add_argument('--llm_train_on_inputs', type=bool, default=False)

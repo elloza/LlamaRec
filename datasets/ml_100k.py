@@ -30,10 +30,10 @@ class ML100KDataset(AbstractDataset):
 
     @classmethod
     def all_raw_file_names(cls):
-        return ['README',
+        return ['README.txt',
                 'movies.csv',
                 'ratings.csv',
-                'users.csv']
+                'tags.csv']
 
     def maybe_download_raw_dataset(self):
         folder_path = self._get_rawdata_folder_path()
@@ -52,7 +52,7 @@ class ML100KDataset(AbstractDataset):
             tmpfolder = tmpfolder.joinpath(os.listdir(tmpfolder)[0])
         shutil.move(tmpfolder, folder_path)
         shutil.rmtree(tmproot)
-        print()
+        print("Downloaded successfully")
 
     def preprocess(self):
         # TODO(DONE): Crea un diccionario que se le pongan los metadatos
@@ -83,12 +83,22 @@ class ML100KDataset(AbstractDataset):
             for k, v in enriched_meta_raw.items() 
             if k in smap
         }
+
+        # TODO Use same structure, a single string not a dictionary
+        new_dict = {
+            key: f"{value['title']} ({', '.join(value['categories'])})"
+                for key, value in enriched_meta.items()
+            }
+
+        # print max length of the string
+        max_length = max(len(valor) for valor in new_dict.values())
+        print(f"Max length of the string: {max_length}")
+
         dataset = {
             'train': train,
             'val': val,
             'test': test,
-            'meta': meta, # {"id": "title + year"}
-            'enriched_meta': enriched_meta,  # {"id": {'title': 'bla bla', 'year': 1900, 'categories': ['c1', 'c2']}}
+            'meta': new_dict, # Changed for title (categories)
             'umap': umap,
             'smap': smap
         }

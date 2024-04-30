@@ -43,12 +43,24 @@ def main(args, export_root=None):
 
 
 if __name__ == "__main__":
-    args.model_code = 'sas'
-    set_template(args)
-    main(args, export_root=None)
+    
+    args.model_code = 'lru'
+    datasets = ['ml-100k', 'beauty', 'games']
 
-    # # searching best hyperparameters
+    # Retrain with best hyperparameters for each dataset
+    for dataset in datasets:
+        
+        args.dataset_code = dataset
+        set_template(args)
+        # best hyperparameters found (it must set after set_template)
+        args.weight_decay = 0
+        args.bert_dropout = 0.5
+        args.bert_attn_dropout = 0.5
+        export_root = EXPERIMENT_ROOT + '/' + args.model_code + '/' + args.dataset_code + '/' + str(args.weight_decay) + '_' + str(args.bert_attn_dropout)
+        main(args, export_root=export_root)
+    
     """
+    # # search for best hyperparameters
     for decay in [0, 0.01]:
         for dropout in [0, 0.1, 0.2, 0.3, 0.4, 0.5]:
             print("------------------------------------")
