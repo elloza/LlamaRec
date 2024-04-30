@@ -13,6 +13,9 @@ from transformers import AutoTokenizer
 from transformers.models.llama.tokenization_llama import DEFAULT_SYSTEM_PROMPT
 from trainer import absolute_recall_mrr_ndcg_for_ks
 
+SUFFLE = True
+if SUFFLE:
+    print("😎 Important note: Experiment in suffle mode 😎")
 
 def worker_init_fn(worker_id):
     random.seed(int(np.random.get_state()[1][0]) + worker_id)                                                  
@@ -66,11 +69,15 @@ def seq_to_token_ids(args, seq, candidates, label, text_dict, tokenizer, prompte
     seq_t = ' \n '.join(['(' + str(idx + 1) + ') ' + truncate_title(text_dict[item]) 
                        for idx, item in enumerate(seq)])
     can_t = ' \n '.join(['(' + chr(ord('A') + idx) + ') ' + truncate_title(text_dict[item])
-                       for idx, item in enumerate(candidates)]) # TODO: ordenación random de los candidatos.
+                       for idx, item in enumerate(candidates)])
+    
+    if SUFFLE:
+        random.shuffle(can_t)
+
     output = chr(ord('A') + candidates.index(label))  # ranking only 
     
     data_point = {}
-    data_point['system'] = args.llm_system_template if args.llm_system_template is not None else DEFAULT_SYSTEM_PROMPT # TODO: template para 
+    data_point['system'] = args.llm_system_template if args.llm_system_template is not None else DEFAULT_SYSTEM_PROMPT
     data_point['input'] = args.llm_input_template.format(seq_t, can_t)
     data_point['output'] = output
     
