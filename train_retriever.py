@@ -49,6 +49,8 @@ if __name__ == "__main__":
 
     # Retrain with best hyperparameters for each dataset
     for dataset in datasets:
+
+        print(f"----TRAINING {dataset}----")
         
         args.dataset_code = dataset
         set_template(args)

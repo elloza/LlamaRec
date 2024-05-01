@@ -46,9 +46,6 @@ def main(args, export_root=None):
         cache_dir=args.llm_cache_dir,
     )
 
-    model.gradient_checkpointing_enable(
-        gradient_checkpointing_kwargs={"use_reentrant": False}
-    )
     model = prepare_model_for_kbit_training(model)
     config = LoraConfig(
         r=args.lora_r,
@@ -71,8 +68,10 @@ def main(args, export_root=None):
 if __name__ == "__main__":
 
     # Experiments with different datasets and tags
-    dataset_codes = ['ml-100k','games','beauty']
+    dataset_codes = ['beauty','ml-100k','games']
     for dataset_code in dataset_codes:
+
+        print(f"---TRAINING {dataset_code}---")
 
         args.dataset_code = dataset_code
         args.model_code = 'llm'

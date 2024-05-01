@@ -98,7 +98,7 @@ class LLMTrainer(Trainer):
 
         hf_args = TrainingArguments(
             per_device_train_batch_size=args.lora_micro_batch_size,
-            gradient_accumulation_steps=args.train_batch_size//args.lora_micro_batch_size,
+            gradient_accumulation_steps=1,
             warmup_steps=args.warmup_steps,
             num_train_epochs=args.lora_num_epochs,
             learning_rate=args.lora_lr,

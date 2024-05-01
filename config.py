@@ -23,7 +23,7 @@ def set_template(args):
         args.bert_max_len = 50
 
     if 'llm' in args.model_code: 
-        batch = 16 if args.dataset_code == 'ml-100k' else 12
+        batch = 8 if args.dataset_code == 'ml-100k' else 8
         args.lora_micro_batch_size = batch
     else: 
         batch = 16 if args.dataset_code == 'ml-100k' else 64
@@ -55,13 +55,13 @@ def set_template(args):
     args.bert_head_size = None
 
     #SAS rec
-    args.bert_max_predictions = 20
-    args.train_negative_sampler_code = 'random'
-    args.train_negative_sample_size = 0
-    args.train_negative_sampling_seed = 0
-    args.test_negative_sampler_code = 'random'
-    args.test_negative_sample_size = 100
-    args.test_negative_sampling_seed = 98765
+    #args.bert_max_predictions = 20
+    #args.train_negative_sampler_code = 'random'
+    #args.train_negative_sample_size = 0
+    #args.train_negative_sampling_seed = 0
+    #args.test_negative_sampler_code = 'random'
+    #args.test_negative_sample_size = 100
+    #args.test_negative_sampling_seed = 98765
 
 parser = argparse.ArgumentParser()
 
@@ -89,7 +89,7 @@ parser.add_argument('--negative_sample_size', type=int, default=10)
 ################
 # optimization #
 parser.add_argument('--device', type=str, default='cuda', choices=['cpu', 'cuda'])
-parser.add_argument('--num_epochs', type=int, default=1)
+parser.add_argument('--num_epochs', type=int, default=500)
 parser.add_argument('--optimizer', type=str, default='AdamW', choices=['AdamW', 'Adam'])
 parser.add_argument('--weight_decay', type=float, default=None)
 parser.add_argument('--adam_epsilon', type=float, default=1e-9)
@@ -154,7 +154,7 @@ parser.add_argument('--lora_alpha', type=int, default=32)
 parser.add_argument('--lora_dropout', type=float, default=0.05)
 parser.add_argument('--lora_target_modules', type=list, default=['q_proj', 'v_proj'])
 parser.add_argument('--lora_num_epochs', type=int, default=1)
-parser.add_argument('--lora_val_iterations', type=int, default=100)
+parser.add_argument('--lora_val_iterations', type=int, default=10)
 parser.add_argument('--lora_early_stopping_patience', type=int, default=20)
 parser.add_argument('--lora_lr', type=float, default=1e-4)
 parser.add_argument('--lora_micro_batch_size', type=int, default=16)

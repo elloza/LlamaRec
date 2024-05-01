@@ -51,13 +51,10 @@ class BeautyDataset(AbstractDataset):
             print()
 
     def preprocess(self):
-        # TODO(DONE): Crea un diccionario que se le pongan los metadatos
-        print("!! This implementation will force the preprocessing !!")
         dataset_path = self._get_preprocessed_dataset_path()
-        # FIXME: We always force to preprocess until new notice
-        #if dataset_path.is_file():
-        #    print('Already preprocessed. Skip preprocessing')
-        #    return
+        if dataset_path.is_file():
+            print('Already preprocessed. Skip preprocessing')
+            return
         if not dataset_path.parent.is_dir():
             dataset_path.parent.mkdir(parents=True)
         self.maybe_download_raw_dataset()
@@ -83,7 +80,7 @@ class BeautyDataset(AbstractDataset):
 
         # TODO Use same structure, a single string not a dictionary
         new_dict = {
-            key: f"{value['title']} ({', '.join(value['categories'])})"
+            key: f"{value['title']} ({', '.join(value['categories'][:3])})"
                 for key, value in enriched_meta.items()
             }
 
@@ -95,6 +92,7 @@ class BeautyDataset(AbstractDataset):
             'train': train,
             'val': val,
             'test': test,
+            #'meta': meta, # Changed for title (categories)
             'meta': new_dict, # Changed for title (categories)
             'umap': umap,
             'smap': smap
